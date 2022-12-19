@@ -7,15 +7,9 @@ interface coordsProps {
   axisY: number
 }
 
-const initialCoords = {
-  axisX: 0,
-  axisY: 0,
-}
-
 function App() {
   const [coords, setCoords] = useState<coordsProps[]>([])
-  const [lastCoord, setLastCoord] = useState<coordsProps>(initialCoords)
-  const [auxUndoTimeline, setAuxUndoTimeline] = useState<coordsProps[]>([])
+  const [lastCoords, setLastCoords] = useState<coordsProps[]>([])
 
   const getCoordinates = (event: React.MouseEvent<HTMLElement>) => {
     const axisX = event.clientX
@@ -26,28 +20,39 @@ function App() {
   const handleUndoClick = () => {
     const lastCoord = coords.pop()
     if (!lastCoord) return
-    setLastCoord({ axisX: lastCoord?.axisX, axisY: lastCoord?.axisY })
+    setLastCoords([...lastCoords, { axisX: lastCoord?.axisX, axisY: lastCoord?.axisY }])
 
     const newTimeline = coords.filter(item => item !== lastCoord)
-    setAuxUndoTimeline(newTimeline)
+    setCoords(newTimeline)
   }
 
   const handleRedoClick = () => {
-    setCoords([...auxUndoTimeline, lastCoord])
+    if (lastCoords.length === 0) return
+    setCoords([...coords, lastCoords[lastCoords.length - 1]])
+    lastCoords.pop()
   }
-
-  console.log(coords)
 
   return (
     <>
       <header className='header'>
-        <button className="undo" onClick={handleUndoClick}>UNDO</button>
-        <button className="redo" onClick={handleRedoClick}>REDO</button>
+        <button className="undo" onClick={handleUndoClick} disabled={coords.length === 0}>UNDO</button>
+        <button className="redo" onClick={handleRedoClick} disabled={!lastCoords}>REDO</button>
       </header>
 
       <div className="App" onClick={getCoordinates}>
-        {coords.map(item => (
-          <div key={`${item.axisX}--${item.axisY}`} style={{ position: "absolute", top: item.axisY, left: item.axisX }} className="ball"></div>
+        {coords.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              position: "absolute",
+              top: item.axisY,
+              left: item.axisX,
+              width: '1rem',
+              height: '1rem',
+              borderRadius: '50%',
+              backgroundColor: '#eafcc2',
+            }}
+            className="ball"></div>
         )
         )}
       </div>
