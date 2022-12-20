@@ -20,7 +20,7 @@ function App() {
   const handleUndoClick = () => {
     const lastCoord = coords.pop()
     if (!lastCoord) return
-    setLastCoords([...lastCoords, { axisX: lastCoord?.axisX, axisY: lastCoord?.axisY }])
+    setLastCoords([...lastCoords, { axisX: lastCoord.axisX, axisY: lastCoord.axisY }])
 
     const newTimeline = coords.filter(item => item !== lastCoord)
     setCoords(newTimeline)
@@ -36,7 +36,7 @@ function App() {
     <>
       <header className='header'>
         <button className="undo" onClick={handleUndoClick} disabled={coords.length === 0}>UNDO</button>
-        <button className="redo" onClick={handleRedoClick} disabled={!lastCoords}>REDO</button>
+        <button className="redo" onClick={handleRedoClick} disabled={lastCoords.length === 0}>REDO</button>
       </header>
 
       <div className="App" onClick={getCoordinates}>
